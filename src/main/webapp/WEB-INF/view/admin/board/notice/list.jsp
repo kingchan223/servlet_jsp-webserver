@@ -118,7 +118,7 @@
 				<nav class="menu text-menu">
 					<h1>알림관리</h1>
 					<ul>
-						<li><a href="/admin/board/notice/list.html">공지사항</a></li>
+						<li><a href="/admin/board/notice/list.jsp">공지사항</a></li>
 					</ul>
 				</nav>
 
@@ -170,6 +170,10 @@
 							</thead>
 							<tbody>
 								<c:forEach var="n" items="${list}">
+									<c:set var="open" value="" />
+									<c:if test="${n.pub == true}">
+										<c:set var="open" value="checked" />
+									</c:if>
 									<tr>
 										<td>${n.id}</td>
 										<td class="title indent text-align-left"><a
@@ -181,7 +185,8 @@
 										<%-- <td><fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" value="${n.regdate}"/> </td> --%>
 										<td><fmt:formatNumber value="${n.hit}" /></td>
 
-										<td><input type="checkbox" name="open-id" value="${n.id}"></td>
+										<td><input type="checkbox" name="open-id" ${open}
+											value="${n.id}"></td>
 										<td><input type="checkbox" name="del-id" value="${n.id}"></td>
 									</tr>
 								</c:forEach>
@@ -200,9 +205,10 @@
 						</div>
 					</div>
 					<div class="text-align-right margin-top">
-						<input type="submit" name="btn" class="btn-text btn-default" value="openAll">
-						<input type="submit" name="btn" class="btn-text btn-default" value="deleteAll">
-						<a class="btn-text btn-default" href="reg">글쓰기</a>
+						<input type="submit" name="btn" class="btn-text btn-default"
+							value="openAll"> <input type="submit" name="btn"
+							class="btn-text btn-default" value="deleteAll"> <a
+							class="btn-text btn-default" href="reg">글쓰기</a>
 					</div>
 				</form>
 				<div class="margin-top align-center pager">

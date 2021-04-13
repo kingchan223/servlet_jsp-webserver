@@ -15,7 +15,7 @@ import com.newlecture.web.entity.Notice;
 import com.newlecture.web.entity.NoticeView;
 
 public class NoticeService {
-	private final String password = "1212";
+	private final String password = "1111";
 	
 	public int removeNoticeAll(int[] ids){
 		return 0;
@@ -73,11 +73,64 @@ public class NoticeService {
 		return getNoticeList("title", "", page);
 	}
 
+	 
+		
+	public List<NoticeView> getNoticePubList(String field, String query, int page) {
+		List<NoticeView> list = new ArrayList<>();
+
+		String sql = "SELECT *  FROM (SELECT @rownum:=@rownum+1  rnum, N.* "
+				+ " FROM newlecture.notice_view3 N, (SELECT @ROWNUM := 0) R WHERE 1=1) list WHERE rnum >= ? AND rnum <= ? AND "
+				+ field + " LIKE ? AND pub = true;";
+
+		Connection connection;
+		String url = "jdbc:mysql://localhost:3306/";
+		String user = "root";
+	
+		String driverName = "com.mysql.cj.jdbc.Driver";
+
+		try {
+			Class.forName(driverName);
+			connection = DriverManager.getConnection(url, user, password);
+			PreparedStatement st = connection.prepareStatement(sql);
+			st.setInt(1, 1 + (page - 1) * 10);
+			st.setInt(2, page * 10);
+			st.setString(3, "%" + query + "%");
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				String title = rs.getString("title");
+				Date regdate = rs.getDate("regdate");
+				String writer_id = rs.getString("writer_id");
+				String hit = rs.getString("hit");
+				String files = rs.getString("FILES");
+				boolean pub = rs.getBoolean("pub");
+//				String content = rs.getString("CONTENT");
+				int cmtCount = rs.getInt("cmt_count");
+				NoticeView notice = new NoticeView(id, title, regdate, writer_id, hit, files, cmtCount, pub);
+				list.add(notice);
+			}
+
+			rs.close();
+			st.close();
+			connection.close();
+
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return list;
+		
+	}
 	public List<NoticeView> getNoticeList(String field, String query, int page) {
 
 		List<NoticeView> list = new ArrayList<>();
 
-		String sql = "SELECT *  FROM (SELECT @rownum:=@rownum+1  rnum, N.* "
+		String sql ="SELECT *  FROM (SELECT @rownum:=@rownum+1  rnum, N.* "
 				+ " FROM newlecture.notice_view3 N, (SELECT @ROWNUM := 0) R WHERE 1=1) list WHERE rnum >= ? AND rnum <= ? AND "
 				+ field + " LIKE ?;";
 
